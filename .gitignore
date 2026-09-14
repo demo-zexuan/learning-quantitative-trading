@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# I. 数据（体积大且可重新拉取，不入库）
+data/raw/
+data/processed/
+data/universe/
+
+# II. 回测输出（每次运行都会重新生成）
+results/
+
+# III. Jupyter
+.ipynb_checkpoints/
+
+# IV. 本地配置与工具产物
+.ruff_cache/
+.pytest_cache/
+*.local.yaml
+.DS_Store
