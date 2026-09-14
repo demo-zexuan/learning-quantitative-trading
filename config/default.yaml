@@ -1,0 +1,51 @@
+# A 股量化研究默认配置
+#
+# I. 使用方式
+#
+#   命令行: uv run qlt --config config/default.yaml
+#   代码中: from qlearn.config import DEFAULT_CONFIG, load_yaml, deep_merge
+#
+# II. 覆盖优先级（低 -> 高）
+#
+#   1. 本文件
+#   2. 命令行参数（如 --strategy / --set fast=10）
+#
+# III. 注意
+#
+#   本文件中被省略的字段会自动继承 qlearn.config.DEFAULT_CONFIG 的取值。
+
+data:
+  # 标的池：既可用内置池名（demo_large_cap / demo_banks / demo_etf），
+  # 也可用 6 位指数代码（000300 沪深300 / 000905 中证500），
+  # 还可直接列出 6 位个股代码
+  universe: demo_large_cap
+  benchmark: "000300"
+  start: "2020-01-01"
+  end: null            # null 表示使用最新可用日期
+  adjust: qfq          # qfq 前复权 / hfq 后复权 / raw 不复权
+  use_cache: true
+  min_observations: 250
+
+backtest:
+  initial_capital: 1000000.0
+  # 单标的单日成交股数占当日成交量的上限；null 表示不限制。
+  # 小盘股或大资金策略必须设置，否则会高估策略容量。
+  max_participation: null
+  costs:
+    commission_rate: 0.00025    # 佣金万分之 2.5，双边
+    min_commission: 5.0         # 单笔最低佣金 5 元
+    stamp_duty_rate: 0.0005     # 印花税万分之 5，仅卖出
+    transfer_fee_rate: 0.00001  # 过户费十万分之 1，双边
+    slippage_bps: 2.0           # 滑点 2 个基点，双边
+    apply_min_commission: true
+
+strategy:
+  name: ma_cross
+  params:
+    fast: 5
+    slow: 20
+
+output:
+  results_dir: results
+  save_results: true
+  save_plots: true
