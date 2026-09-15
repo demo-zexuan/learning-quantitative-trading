@@ -1,0 +1,24 @@
+{
+  // ====================================================================
+  // 团队扩展建议
+  //
+  // I. recommendations
+  //   打开本仓库时 VS Code 会提示安装这些扩展，保证所有人的
+  //   诊断结果一致（都来自 pyproject.toml 的 ruff 配置）
+  //
+  // II. unwantedRecommendations
+  //   仅用于「不再提示/recommend」，**不能强制禁用**扩展。
+  //   实际禁用依赖 .vscode/settings.json 里的 flake8.enabled = false
+  // ====================================================================
+  "recommendations": [
+    "charliermarsh.ruff",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.flake8",
+    "ms-python.autopep8",
+    "ms-python.pylint"
+  ]
+}

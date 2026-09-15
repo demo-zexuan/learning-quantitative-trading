@@ -1,0 +1,112 @@
+{
+  // ====================================================================
+  // 统一 Python 代码检查工具链
+  //
+  // I. 为什么只保留 ruff
+  //
+  //   1. 本项目的行宽标准定义在 pyproject.toml 的 [tool.ruff] line-length = 100
+  //   2. ms-python.flake8 扩展默认使用**自带**的 flake8
+  //      （flake8.importStrategy 的默认值为 useBundled），
+  //      而 flake8 不会读取 pyproject.toml，于是退回 pycodestyle 的默认阈值 79，
+  //      导致编辑器里出现成片 E501「line too long」噪音
+  //   3. ruff 与 flake8 的规则集高度重叠（E/F/I/UP/B/SIM），
+  //      同时开启只会产生互相矛盾的重复诊断，因此关闭 flake8
+  //
+  // II. 如需改回 flake8
+  //
+  //   1. 把 "flake8.enabled" 设回 true
+  //   2. 在项目根新建 .flake8，显式写 max-line-length = 100
+  //      （flake8 无法从 pyproject.toml 读取该配置）
+  // ====================================================================
+  "flake8.enabled": false,
+
+  // --------------------------------------------------------------------
+  // ruff：唯一的事实来源，配置直接读 pyproject.toml 的 [tool.ruff]
+  // --------------------------------------------------------------------
+  "ruff.enable": true,
+  // 使用 .venv 里的 ruff（已通过 `uv add --dev ruff` 安装）
+  "ruff.importStrategy": "fromEnvironment",
+  // 与 pyproject.toml 的 line-length 保持一致
+  "ruff.lineLength": 100,
+  "ruff.lint.enable": true,
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+
+  // --------------------------------------------------------------------
+  // 保存时格式化 + 自动修复
+  // 显式指定 ruff 为默认 formatter，避免被已安装的 autopep8 抢走
+  // （ms-python.autopep8 没有 enabled 开关，只能靠这里指定）
+  // --------------------------------------------------------------------
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+
+  // --------------------------------------------------------------------
+  // 行宽参考线，与 line-length = 100 对齐
+  // --------------------------------------------------------------------
+  "editor.rulers": [100],
+
+  // --------------------------------------------------------------------
+  // 测试
+  // --------------------------------------------------------------------
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+
+  // --------------------------------------------------------------------
+  // 工程目录清爽化
+  // --------------------------------------------------------------------
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "**/*.egg-info": true
+  },
+  "search.exclude": {
+    ".venv": true,
+    "uv.lock": true,
+    "data/raw": true,
+    "results": true
+  },
+
+  // --------------------------------------------------------------------
+  // 拼写检查（Code Spell Checker）
+  //
+  // 已在**用户级设置**中全局关闭：cSpell.enabled = false
+  // （路径：~/Library/Application Support/Code/User/settings.json）
+  //
+  // I. 如果只想关闭本仓库，请把这一行加到下面
+  //    （放在工作区设置里，比全局关闭更精准）：
+  //
+  //      "cSpell.enabled": false
+  //
+  // II. 如果只想关掉笔记本、保留 .py 注释的拼写检查
+  //     （本仓库实测 .py 零告警，噪音全部来自 notebooks/）：
+  //
+  //      "cSpell.enabledFileTypes": { "*": true, "jupyter": false }
+  //
+  //     注意：该设置必须是 **object**（值为 false 表示关闭）。
+  //     array 形式是被废弃的 cSpell.enableFiletypes，写了会报「类型不正确」。
+  //     且该对象会**整体替换**默认值 {"*": true, "markdown": true}，
+  //     所以必须显式带上 "*": true，否则其他文件类型会一起失效。
+  //
+  // III. 更细的粒度
+  //
+  //   1. 只降级、不进 Problems 面板："cSpell.diagnosticLevel": "Hint"
+  //   2. 单行忽略：# cSpell:ignore filterwarnings
+  //                 或 # cSpell:disable-next-line
+  //   3. 交互式最快：选中波浪线 → Cmd+. → Add to Workspace Settings
+  // --------------------------------------------------------------------
+
+  // --------------------------------------------------------------------
+  // 笔记本：以项目根作为工作目录
+  // Jupyter 默认用 ${fileDirname}（即 notebooks/），
+  // 那样 `import qlearn` 会失败；改成 ${workspaceFolder} 才能正常导入
+  // --------------------------------------------------------------------
+  "jupyter.notebookFileRoot": "${workspaceFolder}"
+}
